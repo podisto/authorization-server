@@ -21,6 +21,10 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
+    public static final String PASSWORD_GRANT_TYPE = "password";
+    public static final String CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials";
+    public static final String SECRET = "secret";
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -33,9 +37,20 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("client")
-                .secret(encoder().encode("secret"))
-                .authorizedGrantTypes("password")
+                .secret(encoder().encode(SECRET))
+                .authorizedGrantTypes(PASSWORD_GRANT_TYPE)
+                .scopes("all")
+                .and()
+                .withClient("resource-server")
+                .secret(encoder().encode(SECRET))
+                .authorizedGrantTypes(PASSWORD_GRANT_TYPE)
+                .scopes("all")
+                .and()
+                .withClient("client-service")
+                .secret(encoder().encode(SECRET))
+                .authorizedGrantTypes(CLIENT_CREDENTIALS_GRANT_TYPE)
                 .scopes("all");
+
     }
 
     @Override
