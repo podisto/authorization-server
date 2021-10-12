@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -18,7 +17,6 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
  * Created by podisto on 09/10/2021.
  */
 @Configuration
-@EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
     public static final String PASSWORD_GRANT_TYPE = "password";
@@ -40,11 +38,13 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .secret(encoder().encode(SECRET))
                 .authorizedGrantTypes(PASSWORD_GRANT_TYPE)
                 .scopes("all")
+                .accessTokenValiditySeconds(30)
                 .and()
                 .withClient("resource-server")
                 .secret(encoder().encode(SECRET))
                 .authorizedGrantTypes(PASSWORD_GRANT_TYPE)
                 .scopes("all")
+                .accessTokenValiditySeconds(30)
                 .and()
                 .withClient("client-service")
                 .secret(encoder().encode(SECRET))
@@ -54,7 +54,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         endpoints.tokenStore(tokenStore()).authenticationManager(authenticationManager);
     }
 
